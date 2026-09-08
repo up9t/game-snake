@@ -1,3 +1,3 @@
-export interface IInput {
-  init(target: EventTarget): void;
+export interface IController {
+  (target: EventTarget): void;
 }

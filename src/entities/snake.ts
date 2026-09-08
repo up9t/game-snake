@@ -1,9 +1,9 @@
-import SnakeDirection from "../direction.ts";
-import type Grid from "../grid.ts";
-import type { IColor, IDirection2D, IDrawable, IVec2 } from "../interfaces.ts";
-import { isUndefined } from "../utils.ts";
-import { Entity } from "./base.ts";
-import type { ISnake } from "./interface.ts";
+import SnakeDirection from "../direction";
+import type Grid from "../grid";
+import type { IColor, IDirection2D, IDrawable, IVec2 } from "../interfaces";
+import { isUndefined } from "../utils";
+import { Entity } from "./base";
+import type { ISnake } from "./interface";
 
 interface SnakePart {
   /**
@@ -36,15 +36,15 @@ export default class Snake extends Entity implements ISnake, IDrawable {
 
     this.parts.push({
       position: this.position,
-      color: this.colors[0],
+      color: this.colors[0]!,
     });
   }
 
   public isSelfCollide(): boolean {
-    const head = this.parts[0];
+    const head = this.parts[0]!;
 
     for (let i = 1; i < this.parts.length; i++) {
-      const body = this.parts[i];
+      const body = this.parts[i]!;
       if (head.position.x === body.position.x && head.position.y === body.position.y) {
         return true;
       }
@@ -55,7 +55,7 @@ export default class Snake extends Entity implements ISnake, IDrawable {
 
   public grow(): void {
     const index = this.colors.length % (this.parts.length + 1);
-    const color: IColor = this.colors[index - 1];
+    const color: IColor = this.colors[index - 1]!;
 
     this.parts.push({
       position: {
@@ -210,11 +210,11 @@ export default class Snake extends Entity implements ISnake, IDrawable {
 
   public move(): void {
     const nextPos = this.getNextPosition();
-    const head = this.parts[0].position;
+    const head = this.parts[0]!.position;
 
     for (let i = this.parts.length - 1; i > 0; i--) {
-      const nextBody = this.parts[i - 1].position;
-      const body = this.parts[i].position;
+      const nextBody = this.parts[i - 1]!.position;
+      const body = this.parts[i]!.position;
 
       body.x = nextBody.x;
       body.y = nextBody.y;

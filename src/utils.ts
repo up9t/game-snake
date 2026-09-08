@@ -1,4 +1,4 @@
-import type { IVec2 } from "./interfaces.ts";
+import type { IVec2 } from "./interfaces";
 
 export function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min) + min);

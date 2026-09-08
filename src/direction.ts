@@ -1,4 +1,4 @@
-import type { IDirection2D } from "./interfaces.ts";
+import type { IDirection2D } from "./interfaces";
 
 const Dir = {
   NONE: null,

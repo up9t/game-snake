@@ -1,8 +1,8 @@
-import type Grid from "../grid.ts";
-import type { IColor, IDrawable, IVec2 } from "../interfaces.ts";
-import { isUndefined } from "../utils.ts";
-import { Entity } from "./base.ts";
-import type { IFood } from "./interface.ts";
+import type Grid from "../grid";
+import type { IColor, IDrawable, IVec2 } from "../interfaces";
+import { isUndefined } from "../utils";
+import { Entity } from "./base";
+import type { IFood } from "./interface";
 
 export default class Food extends Entity implements IFood, IDrawable {
   public readonly color;

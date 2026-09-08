@@ -5,16 +5,29 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "build:github": "tsc && vite build --mode=github",
+    "type-check": "vue-tsc --build",
+    "build": "vue-tsc --build && vite build",
+    "build:github": "vue-tsc --build && vite build --mode=github",
     "preview": "vite preview",
     "format": "oxfmt src/",
     "lint": "oxlint --vue-plugin src/"
   },
+  "dependencies": {
+    "vue": "^3.5.40"
+  },
   "devDependencies": {
     "oxfmt": "^0.67.0",
     "oxlint": "^1.82.0",
-    "typescript": "~5.8.3",
-    "vite": "^8.2.2"
+    "vite": "^8.2.2",
+    "@tsconfig/node24": "^24.0.4",
+    "@types/node": "^24.13.3",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/tsconfig": "^0.9.1",
+    "typescript": "~6.0.0",
+    "vite-plugin-vue-devtools": "^8.1.5",
+    "vue-tsc": "^3.3.7"
+  },
+  "engines": {
+    "node": "^22.18.0 || >=24.12.0"
   }
 }

@@ -1,13 +1,13 @@
 export class GameWinEvent extends CustomEvent<void> {
-  public static readonly name = "game-win";
+  public static readonly EVENT_NAME = "game-win";
   public constructor() {
-    super(GameWinEvent.name);
+    super(GameWinEvent.EVENT_NAME);
   }
 }
 
 export class GameLoseEvent extends CustomEvent<void> {
-  public static readonly name = "game-lose";
+  public static readonly EVENT_NAME = "game-lose";
   public constructor() {
-    super(GameLoseEvent.name);
+    super(GameLoseEvent.EVENT_NAME);
   }
 }

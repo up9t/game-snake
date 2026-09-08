@@ -1,5 +1,5 @@
-import type { IColor, IDrawable } from "./interfaces.ts";
-import { isUndefined } from "./utils.ts";
+import type { IColor, IDrawable } from "./interfaces";
+import { isUndefined } from "./utils";
 
 /**
  * Create grid pattern for background
@@ -40,7 +40,7 @@ export default class Grid implements IDrawable {
     for (let i = 0; i < this.rowCount; i++) {
       for (let j = 0; j < this.columnCount; j++) {
         const colorIndex = (i + j) % this.colors.length;
-        const currColor = this.colors[colorIndex];
+        const currColor = this.colors[colorIndex]!;
         const color: [number, number, number, number] = [
           currColor.r / 255,
           currColor.g / 255,

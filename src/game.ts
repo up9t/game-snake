@@ -1,15 +1,14 @@
-import SnakeDirection from "./direction.ts";
-import Food from "./entities/food.ts";
-import type { IEntity } from "./entities/interface.ts";
-import Snake from "./entities/snake.ts";
-import { GameLoseEvent } from "./events/gameover.ts";
-import { InputDown, InputLeft, InputRight, InputUp } from "./events/input.ts";
-import Grid from "./grid.ts";
-import type { IInput } from "./inputs/interface.ts";
-import type { IGame, IVec2 } from "./interfaces.ts";
+import SnakeDirection from "./direction";
+import Food from "./entities/food";
+import type { IEntity } from "./entities/interface";
+import Snake from "./entities/snake";
+import { GameLoseEvent } from "./events/gameover";
+import { InputDownEvent, InputLeftEvent, InputRightEvent, InputUpEvent } from "./events/input";
+import Grid from "./grid";
+import type { IGame, IVec2 } from "./interfaces";
 import fragmentSource from "./shaders/fragment.glsl?raw";
 import vertexSource from "./shaders/vertex.glsl?raw";
-import { getRandomInt, isUndefined } from "./utils.ts";
+import { getRandomInt, isUndefined } from "./utils";
 
 export default class Game extends EventTarget implements IGame {
   private score: number = 0;
@@ -25,7 +24,7 @@ export default class Game extends EventTarget implements IGame {
   private availableGridPositions: number[];
   private static readonly SCORE_PER_FOOD = 10;
 
-  public constructor(canvas: HTMLCanvasElement, inputs: IInput[]) {
+  public constructor(canvas: HTMLCanvasElement) {
     super();
 
     const gl = canvas.getContext("webgl2");
@@ -60,8 +59,7 @@ export default class Game extends EventTarget implements IGame {
     );
 
     const program = this.initShader();
-
-    this.initInputs(inputs);
+    this.registerInputs();
 
     // grid setup sets new width and height to the canvas element
     for (const drawable of [this.grid, this.snake, this.food]) {
@@ -69,7 +67,7 @@ export default class Game extends EventTarget implements IGame {
     }
   }
 
-  private initInputs(inputs: IInput[]) {
+  private registerInputs() {
     const isSameDirection = (aPos: IVec2, bPos: IVec2) => aPos.x === bPos.x && aPos.y === bPos.y;
 
     // TODO: (fix) input could still be set to the opposite if the user click it too fast, for example
@@ -77,7 +75,7 @@ export default class Game extends EventTarget implements IGame {
     // if the user press it to go down/up when snake on the left direction, and
     // immidiately press right button and if the snake haven't move a single grid
     // then it looks like it moving from left to right, which we wouldn't want it to be happen
-    this.addEventListener(InputLeft.name, (e) => {
+    this.addEventListener(InputLeftEvent.EVENT_NAME, (e) => {
       if (isSameDirection(this.snake.direction, SnakeDirection.RIGHT)) {
         e.preventDefault();
 
@@ -87,7 +85,7 @@ export default class Game extends EventTarget implements IGame {
       this.snake.setDirection(SnakeDirection.LEFT);
     });
 
-    this.addEventListener(InputRight.name, (e) => {
+    this.addEventListener(InputRightEvent.EVENT_NAME, (e) => {
       if (isSameDirection(this.snake.direction, SnakeDirection.LEFT)) {
         e.preventDefault();
 
@@ -97,7 +95,7 @@ export default class Game extends EventTarget implements IGame {
       this.snake.setDirection(SnakeDirection.RIGHT);
     });
 
-    this.addEventListener(InputUp.name, (e) => {
+    this.addEventListener(InputUpEvent.EVENT_NAME, (e) => {
       if (isSameDirection(this.snake.direction, SnakeDirection.DOWN)) {
         e.preventDefault();
 
@@ -107,7 +105,7 @@ export default class Game extends EventTarget implements IGame {
       this.snake.setDirection(SnakeDirection.UP);
     });
 
-    this.addEventListener(InputDown.name, (e) => {
+    this.addEventListener(InputDownEvent.EVENT_NAME, (e) => {
       if (isSameDirection(this.snake.direction, SnakeDirection.UP)) {
         e.preventDefault();
 
@@ -116,10 +114,6 @@ export default class Game extends EventTarget implements IGame {
 
       this.snake.setDirection(SnakeDirection.DOWN);
     });
-
-    for (const input of inputs) {
-      input.init(this);
-    }
   }
 
   private initShader() {

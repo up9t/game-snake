@@ -1,5 +1,5 @@
-import type { IVec2 } from "../interfaces.ts";
-import type { ICollider, IEntity } from "./interface.ts";
+import type { IVec2 } from "../interfaces";
+import type { ICollider, IEntity } from "./interface";
 
 export abstract class Entity implements IEntity, ICollider {
   public readonly position: IVec2 = { x: 0, y: 0 };

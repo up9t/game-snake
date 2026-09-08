@@ -1,4 +1,4 @@
-import type { IColor, IDirection2D, IVec2 } from "../interfaces.ts";
+import type { IColor, IDirection2D, IVec2 } from "../interfaces";
 
 export interface IEntity {
   position: IVec2;

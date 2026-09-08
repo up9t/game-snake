@@ -1,31 +1,31 @@
-export class InputLeft extends CustomEvent<void> {
-  public static readonly name = "input-left";
+export class InputLeftEvent extends CustomEvent<void> {
+  public static readonly EVENT_NAME = "input-left";
 
   public constructor() {
-    super(InputLeft.name);
+    super(InputLeftEvent.EVENT_NAME);
   }
 }
 
-export class InputRight extends CustomEvent<void> {
-  public static readonly name = "input-right";
+export class InputRightEvent extends CustomEvent<void> {
+  public static readonly EVENT_NAME = "input-right";
 
   public constructor() {
-    super(InputRight.name);
+    super(InputRightEvent.EVENT_NAME);
   }
 }
 
-export class InputUp extends CustomEvent<void> {
-  public static readonly name = "input-up";
+export class InputUpEvent extends CustomEvent<void> {
+  public static readonly EVENT_NAME = "input-up";
 
   public constructor() {
-    super(InputUp.name);
+    super(InputUpEvent.EVENT_NAME);
   }
 }
 
-export class InputDown extends CustomEvent<void> {
-  public static readonly name = "input-down";
+export class InputDownEvent extends CustomEvent<void> {
+  public static readonly EVENT_NAME = "input-down";
 
   public constructor() {
-    super(InputDown.name);
+    super(InputDownEvent.EVENT_NAME);
   }
 }
