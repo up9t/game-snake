@@ -81,14 +81,7 @@ export default class Food extends Entity implements IFood, IDrawable {
     const posLoc = gl.getAttribLocation(program, "aPos");
     const colorLoc = gl.getAttribLocation(program, "aColor");
 
-    gl.vertexAttribPointer(
-      posLoc,
-      2,
-      gl.FLOAT,
-      false,
-      (2 + 4) * Float32Array.BYTES_PER_ELEMENT,
-      0,
-    );
+    gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, (2 + 4) * Float32Array.BYTES_PER_ELEMENT, 0);
     gl.vertexAttribPointer(
       colorLoc,
       4,
@@ -109,9 +102,7 @@ export default class Food extends Entity implements IFood, IDrawable {
 
   public draw(gl: WebGL2RenderingContext): void {
     if (isUndefined(this.vbo) || isUndefined(this.vao)) {
-      throw new TypeError(
-        "failed to draw with undefined vertex buffer or vertex array",
-      );
+      throw new TypeError("failed to draw with undefined vertex buffer or vertex array");
     }
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);

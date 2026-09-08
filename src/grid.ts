@@ -66,14 +66,7 @@ export default class Grid implements IDrawable {
         vertices.push(x2, y2, ...color); // bottom-right
         vertices.push(x1, y2, ...color); // bottom-left
 
-        indices.push(
-          offset,
-          offset + 1,
-          offset + 2,
-          offset,
-          offset + 2,
-          offset + 3,
-        );
+        indices.push(offset, offset + 1, offset + 2, offset, offset + 2, offset + 3);
       }
     }
 
@@ -108,11 +101,7 @@ export default class Grid implements IDrawable {
 
     const ibo = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
-    gl.bufferData(
-      gl.ELEMENT_ARRAY_BUFFER,
-      new Uint16Array(indices),
-      gl.STATIC_DRAW,
-    );
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
 
     this.vao = vao;
   }
@@ -125,11 +114,6 @@ export default class Grid implements IDrawable {
     }
 
     gl.bindVertexArray(this.vao);
-    gl.drawElements(
-      gl.TRIANGLES,
-      this.rowCount * this.columnCount * 6,
-      gl.UNSIGNED_SHORT,
-      0,
-    );
+    gl.drawElements(gl.TRIANGLES, this.rowCount * this.columnCount * 6, gl.UNSIGNED_SHORT, 0);
   }
 }

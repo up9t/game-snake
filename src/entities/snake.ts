@@ -45,10 +45,7 @@ export default class Snake extends Entity implements ISnake, IDrawable {
 
     for (let i = 1; i < this.parts.length; i++) {
       const body = this.parts[i];
-      if (
-        head.position.x === body.position.x &&
-        head.position.y === body.position.y
-      ) {
+      if (head.position.x === body.position.x && head.position.y === body.position.y) {
         return true;
       }
     }
@@ -74,11 +71,7 @@ export default class Snake extends Entity implements ISnake, IDrawable {
     gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
     gl.bufferData(
       gl.ARRAY_BUFFER,
-      this.grid.getRowCount() *
-        this.grid.getColumnCount() *
-        4 *
-        6 *
-        Float32Array.BYTES_PER_ELEMENT,
+      this.grid.getRowCount() * this.grid.getColumnCount() * 4 * 6 * Float32Array.BYTES_PER_ELEMENT,
       gl.DYNAMIC_DRAW,
     );
 
@@ -89,10 +82,7 @@ export default class Snake extends Entity implements ISnake, IDrawable {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
     gl.bufferData(
       gl.ELEMENT_ARRAY_BUFFER,
-      this.grid.getRowCount() *
-        this.grid.getColumnCount() *
-        6 *
-        Uint16Array.BYTES_PER_ELEMENT,
+      this.grid.getRowCount() * this.grid.getColumnCount() * 6 * Uint16Array.BYTES_PER_ELEMENT,
       gl.DYNAMIC_DRAW,
     );
 
@@ -138,22 +128,11 @@ export default class Snake extends Entity implements ISnake, IDrawable {
         i * 4 + 3,
       ]);
 
-      gl.bufferSubData(
-        gl.ELEMENT_ARRAY_BUFFER,
-        i * indices.byteLength,
-        indices,
-      );
+      gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, i * indices.byteLength, indices);
     }
 
     const posLoc = gl.getAttribLocation(program, "aPos");
-    gl.vertexAttribPointer(
-      posLoc,
-      2,
-      gl.FLOAT,
-      false,
-      6 * Float32Array.BYTES_PER_ELEMENT,
-      0,
-    );
+    gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
     gl.enableVertexAttribArray(posLoc);
 
     const colorLoc = gl.getAttribLocation(program, "aColor");
@@ -175,9 +154,7 @@ export default class Snake extends Entity implements ISnake, IDrawable {
 
   public draw(gl: WebGL2RenderingContext): void {
     if (isUndefined(this.vbo) || isUndefined(this.vao)) {
-      throw new TypeError(
-        "failed to draw with undefined vertex buffer or vertex array",
-      );
+      throw new TypeError("failed to draw with undefined vertex buffer or vertex array");
     }
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
@@ -225,11 +202,7 @@ export default class Snake extends Entity implements ISnake, IDrawable {
         i * 4 + 3,
       ]);
 
-      gl.bufferSubData(
-        gl.ELEMENT_ARRAY_BUFFER,
-        i * indices.byteLength,
-        indices,
-      );
+      gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, i * indices.byteLength, indices);
     }
 
     gl.drawElements(gl.TRIANGLES, this.parts.length * 6, gl.UNSIGNED_SHORT, 0);

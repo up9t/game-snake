@@ -10,9 +10,6 @@ export abstract class Entity implements IEntity, ICollider {
   }
 
   public isCollide(collider: ICollider): boolean {
-    return (
-      collider.position.x === this.position.x &&
-      collider.position.y === this.position.y
-    );
+    return collider.position.x === this.position.x && collider.position.y === this.position.y;
   }
 }

@@ -8,11 +8,13 @@
     "build": "tsc && vite build",
     "build:github": "tsc && vite build --mode=github",
     "preview": "vite preview",
-    "format": "biome check --write"
+    "format": "oxfmt src/",
+    "lint": "oxlint --vue-plugin src/"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.0.6",
+    "oxfmt": "^0.67.0",
+    "oxlint": "^1.82.0",
     "typescript": "~5.8.3",
-    "vite": "^6.3.5"
+    "vite": "^8.2.2"
   }
 }

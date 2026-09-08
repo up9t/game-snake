@@ -44,9 +44,7 @@ export default class Game extends EventTarget implements IGame {
       y: Math.floor(this.grid.getRowCount() / 2),
     };
 
-    this.availableGridPositions = this.refreshAndTakeAvailablePosition([
-      snakeInitialPos,
-    ]);
+    this.availableGridPositions = this.refreshAndTakeAvailablePosition([snakeInitialPos]);
 
     const foodInitialPos: IVec2 = this.getRandomAvailablePosition();
 
@@ -72,8 +70,7 @@ export default class Game extends EventTarget implements IGame {
   }
 
   private initInputs(inputs: IInput[]) {
-    const isSameDirection = (aPos: IVec2, bPos: IVec2) =>
-      aPos.x === bPos.x && aPos.y === bPos.y;
+    const isSameDirection = (aPos: IVec2, bPos: IVec2) => aPos.x === bPos.x && aPos.y === bPos.y;
 
     // TODO: (fix) input could still be set to the opposite if the user click it too fast, for example
     // left shouldnt be possible when snake on right direction, but
@@ -128,11 +125,7 @@ export default class Game extends EventTarget implements IGame {
   private initShader() {
     const gl = this.gl;
     const vertexShader = this.createShader(gl, gl.VERTEX_SHADER, vertexSource);
-    const fragmentShader = this.createShader(
-      gl,
-      gl.FRAGMENT_SHADER,
-      fragmentSource,
-    );
+    const fragmentShader = this.createShader(gl, gl.FRAGMENT_SHADER, fragmentSource);
     const program = this.createProgram(gl, vertexShader, fragmentShader);
 
     gl.useProgram(program);
@@ -151,9 +144,7 @@ export default class Game extends EventTarget implements IGame {
       availableGridPositions[s] = null;
     }
 
-    this.availableGridPositions = availableGridPositions.filter(
-      (pos) => pos !== null,
-    );
+    this.availableGridPositions = availableGridPositions.filter((pos) => pos !== null);
 
     return this.availableGridPositions;
   }
@@ -175,11 +166,7 @@ export default class Game extends EventTarget implements IGame {
     return { x, y };
   }
 
-  private createShader(
-    gl: WebGL2RenderingContext,
-    type: GLenum,
-    source: string,
-  ) {
+  private createShader(gl: WebGL2RenderingContext, type: GLenum, source: string) {
     const shader = gl.createShader(type);
 
     if (shader === null) {
@@ -192,9 +179,7 @@ export default class Game extends EventTarget implements IGame {
     const isCompileOk = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
 
     if (!isCompileOk) {
-      throw new Error(
-        gl.getShaderInfoLog(shader) ?? "unknown error while compile shader",
-      );
+      throw new Error(gl.getShaderInfoLog(shader) ?? "unknown error while compile shader");
     }
 
     return shader;
@@ -213,9 +198,7 @@ export default class Game extends EventTarget implements IGame {
     const ok = gl.getProgramParameter(program, gl.LINK_STATUS);
 
     if (!ok) {
-      throw new Error(
-        gl.getProgramInfoLog(program) ?? "unknown error while linking shader",
-      );
+      throw new Error(gl.getProgramInfoLog(program) ?? "unknown error while linking shader");
     }
 
     return program;
