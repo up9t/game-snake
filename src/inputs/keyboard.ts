@@ -1,30 +1,27 @@
-import { InputDown, InputLeft, InputRight, InputUp } from "../events/input.ts";
-import type { IInput } from "./interface.ts";
+import { InputDownEvent, InputLeftEvent, InputRightEvent, InputUpEvent } from "../events/input";
 
-export default class KeyboardControl implements IInput {
-  public init(target: EventTarget): void {
-    addEventListener("keydown", (event: KeyboardEvent): void => {
-      switch (event.key) {
-        case "ArrowLeft":
-        case "a":
-          target.dispatchEvent(new InputLeft());
-          break;
+export default function InitKeyboardControl(target: EventTarget) {
+  addEventListener("keydown", (event: KeyboardEvent): void => {
+    switch (event.key) {
+      case "ArrowLeft":
+      case "a":
+        target.dispatchEvent(new InputLeftEvent());
+        break;
 
-        case "ArrowRight":
-        case "d":
-          target.dispatchEvent(new InputRight());
-          break;
+      case "ArrowRight":
+      case "d":
+        target.dispatchEvent(new InputRightEvent());
+        break;
 
-        case "ArrowUp":
-        case "w":
-          target.dispatchEvent(new InputUp());
-          break;
+      case "ArrowUp":
+      case "w":
+        target.dispatchEvent(new InputUpEvent());
+        break;
 
-        case "ArrowDown":
-        case "s":
-          target.dispatchEvent(new InputDown());
-          break;
-      }
-    });
-  }
+      case "ArrowDown":
+      case "s":
+        target.dispatchEvent(new InputDownEvent());
+        break;
+    }
+  });
 }

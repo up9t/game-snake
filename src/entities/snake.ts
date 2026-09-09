@@ -1,9 +1,9 @@
-import SnakeDirection from "../direction.ts";
-import type Grid from "../grid.ts";
-import type { IColor, IDirection2D, IDrawable, IVec2 } from "../interfaces.ts";
-import { isUndefined } from "../utils.ts";
-import { Entity } from "./base.ts";
-import type { ISnake } from "./interface.ts";
+import SnakeDirection from "../direction";
+import type Grid from "../grid";
+import type { IColor, IDirection2D, IDrawable, IVec2 } from "../interfaces";
+import { isUndefined } from "../utils";
+import { Entity } from "./base";
+import type { ISnake } from "./interface";
 
 interface SnakePart {
   /**
@@ -36,19 +36,16 @@ export default class Snake extends Entity implements ISnake, IDrawable {
 
     this.parts.push({
       position: this.position,
-      color: this.colors[0],
+      color: this.colors[0]!,
     });
   }
 
   public isSelfCollide(): boolean {
-    const head = this.parts[0];
+    const head = this.parts[0]!;
 
     for (let i = 1; i < this.parts.length; i++) {
-      const body = this.parts[i];
-      if (
-        head.position.x === body.position.x &&
-        head.position.y === body.position.y
-      ) {
+      const body = this.parts[i]!;
+      if (head.position.x === body.position.x && head.position.y === body.position.y) {
         return true;
       }
     }
@@ -58,7 +55,7 @@ export default class Snake extends Entity implements ISnake, IDrawable {
 
   public grow(): void {
     const index = this.colors.length % (this.parts.length + 1);
-    const color: IColor = this.colors[index - 1];
+    const color: IColor = this.colors[index - 1]!;
 
     this.parts.push({
       position: {
@@ -74,11 +71,7 @@ export default class Snake extends Entity implements ISnake, IDrawable {
     gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
     gl.bufferData(
       gl.ARRAY_BUFFER,
-      this.grid.getRowCount() *
-        this.grid.getColumnCount() *
-        4 *
-        6 *
-        Float32Array.BYTES_PER_ELEMENT,
+      this.grid.getRowCount() * this.grid.getColumnCount() * 4 * 6 * Float32Array.BYTES_PER_ELEMENT,
       gl.DYNAMIC_DRAW,
     );
 
@@ -89,10 +82,7 @@ export default class Snake extends Entity implements ISnake, IDrawable {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
     gl.bufferData(
       gl.ELEMENT_ARRAY_BUFFER,
-      this.grid.getRowCount() *
-        this.grid.getColumnCount() *
-        6 *
-        Uint16Array.BYTES_PER_ELEMENT,
+      this.grid.getRowCount() * this.grid.getColumnCount() * 6 * Uint16Array.BYTES_PER_ELEMENT,
       gl.DYNAMIC_DRAW,
     );
 
@@ -138,22 +128,11 @@ export default class Snake extends Entity implements ISnake, IDrawable {
         i * 4 + 3,
       ]);
 
-      gl.bufferSubData(
-        gl.ELEMENT_ARRAY_BUFFER,
-        i * indices.byteLength,
-        indices,
-      );
+      gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, i * indices.byteLength, indices);
     }
 
     const posLoc = gl.getAttribLocation(program, "aPos");
-    gl.vertexAttribPointer(
-      posLoc,
-      2,
-      gl.FLOAT,
-      false,
-      6 * Float32Array.BYTES_PER_ELEMENT,
-      0,
-    );
+    gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
     gl.enableVertexAttribArray(posLoc);
 
     const colorLoc = gl.getAttribLocation(program, "aColor");
@@ -175,9 +154,7 @@ export default class Snake extends Entity implements ISnake, IDrawable {
 
   public draw(gl: WebGL2RenderingContext): void {
     if (isUndefined(this.vbo) || isUndefined(this.vao)) {
-      throw new TypeError(
-        "failed to draw with undefined vertex buffer or vertex array",
-      );
+      throw new TypeError("failed to draw with undefined vertex buffer or vertex array");
     }
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
@@ -225,11 +202,7 @@ export default class Snake extends Entity implements ISnake, IDrawable {
         i * 4 + 3,
       ]);
 
-      gl.bufferSubData(
-        gl.ELEMENT_ARRAY_BUFFER,
-        i * indices.byteLength,
-        indices,
-      );
+      gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, i * indices.byteLength, indices);
     }
 
     gl.drawElements(gl.TRIANGLES, this.parts.length * 6, gl.UNSIGNED_SHORT, 0);
@@ -237,11 +210,11 @@ export default class Snake extends Entity implements ISnake, IDrawable {
 
   public move(): void {
     const nextPos = this.getNextPosition();
-    const head = this.parts[0].position;
+    const head = this.parts[0]!.position;
 
     for (let i = this.parts.length - 1; i > 0; i--) {
-      const nextBody = this.parts[i - 1].position;
-      const body = this.parts[i].position;
+      const nextBody = this.parts[i - 1]!.position;
+      const body = this.parts[i]!.position;
 
       body.x = nextBody.x;
       body.y = nextBody.y;

@@ -1,8 +1,8 @@
-import type Grid from "../grid.ts";
-import type { IColor, IDrawable, IVec2 } from "../interfaces.ts";
-import { isUndefined } from "../utils.ts";
-import { Entity } from "./base.ts";
-import type { IFood } from "./interface.ts";
+import type Grid from "../grid";
+import type { IColor, IDrawable, IVec2 } from "../interfaces";
+import { isUndefined } from "../utils";
+import { Entity } from "./base";
+import type { IFood } from "./interface";
 
 export default class Food extends Entity implements IFood, IDrawable {
   public readonly color;
@@ -81,14 +81,7 @@ export default class Food extends Entity implements IFood, IDrawable {
     const posLoc = gl.getAttribLocation(program, "aPos");
     const colorLoc = gl.getAttribLocation(program, "aColor");
 
-    gl.vertexAttribPointer(
-      posLoc,
-      2,
-      gl.FLOAT,
-      false,
-      (2 + 4) * Float32Array.BYTES_PER_ELEMENT,
-      0,
-    );
+    gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, (2 + 4) * Float32Array.BYTES_PER_ELEMENT, 0);
     gl.vertexAttribPointer(
       colorLoc,
       4,
@@ -109,9 +102,7 @@ export default class Food extends Entity implements IFood, IDrawable {
 
   public draw(gl: WebGL2RenderingContext): void {
     if (isUndefined(this.vbo) || isUndefined(this.vao)) {
-      throw new TypeError(
-        "failed to draw with undefined vertex buffer or vertex array",
-      );
+      throw new TypeError("failed to draw with undefined vertex buffer or vertex array");
     }
 
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);

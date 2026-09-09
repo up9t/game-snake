@@ -1,5 +1,5 @@
-import type { IVec2 } from "../interfaces.ts";
-import type { ICollider, IEntity } from "./interface.ts";
+import type { IVec2 } from "../interfaces";
+import type { ICollider, IEntity } from "./interface";
 
 export abstract class Entity implements IEntity, ICollider {
   public readonly position: IVec2 = { x: 0, y: 0 };
@@ -10,9 +10,6 @@ export abstract class Entity implements IEntity, ICollider {
   }
 
   public isCollide(collider: ICollider): boolean {
-    return (
-      collider.position.x === this.position.x &&
-      collider.position.y === this.position.y
-    );
+    return collider.position.x === this.position.x && collider.position.y === this.position.y;
   }
 }

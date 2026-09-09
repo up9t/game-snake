@@ -1,4 +1,4 @@
-import type { Direction } from "./direction.ts";
+import type { Direction } from "./direction";
 
 export interface IDirection2D<T = (typeof Direction)[keyof typeof Direction]> {
   x: T;
