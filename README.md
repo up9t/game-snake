@@ -2,20 +2,20 @@
 
 I try to create a snake game with typescript
 
-![image](https://github.com/user-attachments/assets/183cdd8a-9900-4835-bd35-9ae30938220f)
+![image](./docs/images/screenshot1.png)
 
 ## Try locally
 
 Install node dependencies
 
 ```bash
-pnpm run install
+npm run install
 ```
 
 Run
 
 ```bash
-pnpm run dev --host
+npm run dev
 ```
 
 now go to http://localhost:5173
