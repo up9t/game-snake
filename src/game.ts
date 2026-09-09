@@ -5,7 +5,7 @@ import Snake from "./entities/snake";
 import { GameLoseEvent } from "./events/gameover";
 import { InputDownEvent, InputLeftEvent, InputRightEvent, InputUpEvent } from "./events/input";
 import Grid from "./grid";
-import type { IGame, IVec2 } from "./interfaces";
+import type { IDirection2D, IGame, IVec2 } from "./interfaces";
 import fragmentSource from "./shaders/fragment.glsl?raw";
 import vertexSource from "./shaders/vertex.glsl?raw";
 import { getRandomInt, isUndefined } from "./utils";
@@ -17,14 +17,14 @@ export default class Game extends EventTarget implements IGame {
   private snake;
   private food;
   private grid;
+  private finalDirection: IDirection2D = SnakeDirection.NONE;
 
-  private canvas: HTMLCanvasElement;
   private gl: WebGL2RenderingContext;
 
   private availableGridPositions: number[];
   private static readonly SCORE_PER_FOOD = 10;
 
-  public constructor(canvas: HTMLCanvasElement) {
+  public constructor(private readonly canvas: HTMLCanvasElement) {
     super();
 
     const gl = canvas.getContext("webgl2");
@@ -34,8 +34,6 @@ export default class Game extends EventTarget implements IGame {
     }
 
     this.gl = gl;
-    this.canvas = canvas;
-
     this.grid = new Grid(canvas, 20);
 
     const snakeInitialPos: IVec2 = {
@@ -52,6 +50,7 @@ export default class Game extends EventTarget implements IGame {
       snakeInitialPos,
       this.grid,
     );
+
     this.food = new Food(
       { r: 245 / 255, g: 61 / 255, b: 101 / 255, a: 1 },
       foodInitialPos,
@@ -67,52 +66,25 @@ export default class Game extends EventTarget implements IGame {
     }
   }
 
+  private isOppositeDirection(aDir: IVec2, bDir: IVec2) {
+    return aDir.x === -bDir.x && aDir.y === -bDir.y;
+  }
+
   private registerInputs() {
-    const isSameDirection = (aPos: IVec2, bPos: IVec2) => aPos.x === bPos.x && aPos.y === bPos.y;
-
-    // TODO: (fix) input could still be set to the opposite if the user click it too fast, for example
-    // left shouldnt be possible when snake on right direction, but
-    // if the user press it to go down/up when snake on the left direction, and
-    // immidiately press right button and if the snake haven't move a single grid
-    // then it looks like it moving from left to right, which we wouldn't want it to be happen
-    this.addEventListener(InputLeftEvent.EVENT_NAME, (e) => {
-      if (isSameDirection(this.snake.direction, SnakeDirection.RIGHT)) {
-        e.preventDefault();
-
-        return;
-      }
-
-      this.snake.setDirection(SnakeDirection.LEFT);
+    this.addEventListener(InputLeftEvent.EVENT_NAME, () => {
+      this.finalDirection = SnakeDirection.LEFT;
     });
 
-    this.addEventListener(InputRightEvent.EVENT_NAME, (e) => {
-      if (isSameDirection(this.snake.direction, SnakeDirection.LEFT)) {
-        e.preventDefault();
-
-        return;
-      }
-
-      this.snake.setDirection(SnakeDirection.RIGHT);
+    this.addEventListener(InputRightEvent.EVENT_NAME, () => {
+      this.finalDirection = SnakeDirection.RIGHT;
     });
 
-    this.addEventListener(InputUpEvent.EVENT_NAME, (e) => {
-      if (isSameDirection(this.snake.direction, SnakeDirection.DOWN)) {
-        e.preventDefault();
-
-        return;
-      }
-
-      this.snake.setDirection(SnakeDirection.UP);
+    this.addEventListener(InputUpEvent.EVENT_NAME, () => {
+      this.finalDirection = SnakeDirection.UP;
     });
 
-    this.addEventListener(InputDownEvent.EVENT_NAME, (e) => {
-      if (isSameDirection(this.snake.direction, SnakeDirection.UP)) {
-        e.preventDefault();
-
-        return;
-      }
-
-      this.snake.setDirection(SnakeDirection.DOWN);
+    this.addEventListener(InputDownEvent.EVENT_NAME, () => {
+      this.finalDirection = SnakeDirection.DOWN;
     });
   }
 
@@ -206,6 +178,12 @@ export default class Game extends EventTarget implements IGame {
     // run every 100 miliseconds
     if (now - this.lastTime <= 100) {
       return;
+    }
+
+    const isOpposite = this.isOppositeDirection(this.snake.direction, this.finalDirection);
+
+    if (!isOpposite) {
+      this.snake.setDirection(this.finalDirection);
     }
 
     this.lastTime = now;

@@ -23,10 +23,18 @@ export interface IColor {
 }
 
 export interface IGame {
-  onUpdate(deltaTimeSeconds: number): void;
+  /**
+   *
+   * @param now not a delta time, just the time now.
+   */
+  onUpdate(now: number): void;
 }
 
 export interface IDrawable {
   setup(gl: WebGL2RenderingContext, program: WebGLProgram): void;
   draw(gl: WebGL2RenderingContext): void;
+}
+
+export interface IController {
+  (target: EventTarget): void;
 }
