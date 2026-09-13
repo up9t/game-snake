@@ -1,21 +1,14 @@
-FROM node:24-alpine AS build
+FROM node:26-alpine AS builder
+FROM nginx:1.31-alpine AS runner
+
+FROM builder as build
 
 WORKDIR /app
-
-# Activate pnpm
-RUN corepack enable pnpm && \
-  yes | pnpm -v
-
-RUN --mount=type=bind,src=package.json,target=package.json \
-    --mount=type=bind,src=pnpm-lock.yaml,target=pnpm-lock.yaml \
-    pnpm install
-  
+COPY package.json package-lock.json ./
+RUN npm ci
 COPY . .
+RUN npm run build
 
-RUN pnpm run build
-
-FROM nginx:1.29-alpine
-
+FROM runner
 COPY --from=build /app/dist /usr/share/nginx/html
-
 EXPOSE 80
