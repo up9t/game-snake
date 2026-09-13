@@ -9,7 +9,7 @@ I try to create a snake game with typescript
 Install node dependencies
 
 ```bash
-npm run install
+npm i
 ```
 
 Run
