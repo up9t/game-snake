@@ -10,7 +10,3 @@ export function getCanvasMiddlePosition(canvas: HTMLCanvasElement): IVec2 {
     y: Math.floor(canvas.height / 2),
   };
 }
-
-export function isUndefined(v: unknown): v is undefined {
-  return typeof v === "undefined";
-}
