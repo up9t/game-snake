@@ -1,4 +1,4 @@
-import type { IColor, IDirection2D, IVec2 } from "../interfaces";
+import type { ColorHex, IDirection2D, IVec2 } from "../interfaces";
 
 export interface IEntity {
   position: IVec2;
@@ -6,28 +6,15 @@ export interface IEntity {
   setPosition(pos: IVec2): void;
 }
 
-export interface ICollider extends IEntity {
-  isCollide(collider: ICollider): boolean;
+export interface IFood extends IEntity {
+  color: ColorHex;
 }
 
-export interface IGrowable {
-  grow(): void;
-}
-
-export interface IMoveable {
-  move(): void;
-}
-
-export interface IFood extends IEntity, ICollider {
-  color: IColor;
-}
-
-export interface ISnake extends IEntity, ICollider, IGrowable, IMoveable {
-  /**
-   * Correspond with snake size
-   */
-  colors: IColor[];
+export interface ISnake extends IEntity {
+  color: ColorHex;
   setDirection(direction: IDirection2D): void;
+  move(): void;
+  grow(): void;
   getPositions(): IVec2[];
   isSelfCollide(): boolean;
 }

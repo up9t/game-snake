@@ -15,12 +15,7 @@ export interface IVec2 {
   y: number;
 }
 
-export interface IColor {
-  r: number;
-  g: number;
-  b: number;
-  a: number;
-}
+export type ColorHex = number;
 
 export interface IGame {
   /**

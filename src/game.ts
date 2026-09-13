@@ -6,9 +6,7 @@ import { GameLoseEvent } from "./events/gameover";
 import { InputDownEvent, InputLeftEvent, InputRightEvent, InputUpEvent } from "./events/input";
 import Grid from "./grid";
 import type { IDirection2D, IGame, IVec2 } from "./interfaces";
-import fragmentSource from "./shaders/fragment.glsl?raw";
-import vertexSource from "./shaders/vertex.glsl?raw";
-import { getRandomInt, isUndefined } from "./utils";
+import { getRandomInt } from "./utils";
 
 export default class Game extends EventTarget implements IGame {
   private score: number = 0;
@@ -19,51 +17,37 @@ export default class Game extends EventTarget implements IGame {
   private grid;
   private finalDirection: IDirection2D = SnakeDirection.NONE;
 
-  private gl: WebGL2RenderingContext;
-
-  private availableGridPositions: number[];
+  /**
+   * [x, y, x, y, ...]
+   */
+  private availablePositions: number[];
   private static readonly SCORE_PER_FOOD = 10;
 
-  public constructor(private readonly canvas: HTMLCanvasElement) {
+  public getState() {
+    return {
+      player: this.snake.getPositions(),
+      food: this.food.position,
+      grid: this.grid,
+    };
+  }
+
+  public constructor(row: number, column: number) {
     super();
 
-    const gl = canvas.getContext("webgl2");
+    this.grid = new Grid(row, column);
 
-    if (!gl) {
-      throw new Error("Your browser does not support webgl2");
-    }
-
-    this.gl = gl;
-    this.grid = new Grid(canvas, 20);
-
-    const snakeInitialPos: IVec2 = {
-      x: Math.floor(this.grid.getColumnCount() / 2),
-      y: Math.floor(this.grid.getRowCount() / 2),
+    const snakeInitialPos = {
+      x: this.grid.column / 2,
+      y: this.grid.row / 2,
     };
 
-    this.availableGridPositions = this.refreshAndTakeAvailablePosition([snakeInitialPos]);
+    this.availablePositions = this.calculateAvailablePositions([snakeInitialPos]);
 
-    const foodInitialPos: IVec2 = this.getRandomAvailablePosition();
+    this.snake = new Snake(0xffffff, snakeInitialPos);
 
-    this.snake = new Snake(
-      [{ r: 94 / 255, g: 116 / 255, b: 255 / 255, a: 1 }],
-      snakeInitialPos,
-      this.grid,
-    );
+    this.food = new Food(0xffffff, this.getRandomAvailablePosition());
 
-    this.food = new Food(
-      { r: 245 / 255, g: 61 / 255, b: 101 / 255, a: 1 },
-      foodInitialPos,
-      this.grid,
-    );
-
-    const program = this.initShader();
     this.registerInputs();
-
-    // grid setup sets new width and height to the canvas element
-    for (const drawable of [this.grid, this.snake, this.food]) {
-      drawable.setup(gl, program);
-    }
   }
 
   private isOppositeDirection(aDir: IVec2, bDir: IVec2) {
@@ -88,86 +72,33 @@ export default class Game extends EventTarget implements IGame {
     });
   }
 
-  private initShader() {
-    const gl = this.gl;
-    const vertexShader = this.createShader(gl, gl.VERTEX_SHADER, vertexSource);
-    const fragmentShader = this.createShader(gl, gl.FRAGMENT_SHADER, fragmentSource);
-    const program = this.createProgram(gl, vertexShader, fragmentShader);
-
-    gl.useProgram(program);
-
-    return program;
-  }
-
-  private refreshAndTakeAvailablePosition(positions: IVec2[]) {
-    const availableGridPositions = Array.from<unknown, number | null>(
-      { length: this.grid.getRowCount() * this.grid.getColumnCount() },
+  private calculateAvailablePositions(positions: IVec2[]) {
+    const availableGridPositions = Array.from(
+      { length: this.grid.row * this.grid.column },
       (_, i) => i,
     );
 
     for (const position of positions) {
-      const s = position.x + position.y * this.grid.getColumnCount();
-      availableGridPositions[s] = null;
+      const s = position.x + position.y * this.grid.column;
+      availableGridPositions[s] = -1;
     }
 
-    this.availableGridPositions = availableGridPositions.filter((pos) => pos !== null);
-
-    return this.availableGridPositions;
+    return availableGridPositions.filter((pos) => pos >= 0);
   }
 
   private getRandomAvailablePosition(): IVec2 {
-    const position = this.availableGridPositions.at(
-      getRandomInt(0, this.availableGridPositions.length),
-    );
+    const position = this.availablePositions.at(getRandomInt(0, this.availablePositions.length));
 
-    if (isUndefined(position)) {
+    if (typeof position === "undefined") {
       throw new TypeError("failed to get random available position", {
         cause: "position undefined",
       });
     }
 
-    const x = position % this.grid.getColumnCount();
-    const y = Math.floor(position / this.grid.getColumnCount());
+    const x = position % this.grid.column;
+    const y = Math.floor(position / this.grid.column);
 
     return { x, y };
-  }
-
-  private createShader(gl: WebGL2RenderingContext, type: GLenum, source: string) {
-    const shader = gl.createShader(type);
-
-    if (shader === null) {
-      throw new Error("failed to create shader");
-    }
-
-    gl.shaderSource(shader, source);
-    gl.compileShader(shader);
-
-    const isCompileOk = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-
-    if (!isCompileOk) {
-      throw new Error(gl.getShaderInfoLog(shader) ?? "unknown error while compile shader");
-    }
-
-    return shader;
-  }
-
-  private createProgram(
-    gl: WebGL2RenderingContext,
-    vertexShader: WebGLShader,
-    fragmentShader: WebGLShader,
-  ) {
-    const program = gl.createProgram();
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
-    gl.linkProgram(program);
-
-    const ok = gl.getProgramParameter(program, gl.LINK_STATUS);
-
-    if (!ok) {
-      throw new Error(gl.getProgramInfoLog(program) ?? "unknown error while linking shader");
-    }
-
-    return program;
   }
 
   public addScore(add: number): void {
@@ -189,7 +120,7 @@ export default class Game extends EventTarget implements IGame {
     this.lastTime = now;
 
     this.snake.move();
-    this.refreshAndTakeAvailablePosition(this.snake.getPositions());
+    this.availablePositions = this.calculateAvailablePositions(this.snake.getPositions());
 
     if (this.snake.isSelfCollide()) {
       this.dispatchEvent(new GameLoseEvent());
@@ -201,30 +132,23 @@ export default class Game extends EventTarget implements IGame {
       return;
     }
 
-    if (this.snake.isCollide(this.food)) {
+    if (this.isCollide(this.snake, this.food)) {
       this.addScore(Game.SCORE_PER_FOOD);
       this.food.setPosition(this.getRandomAvailablePosition());
       this.snake.grow();
     }
-
-    this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-    this.render();
   }
 
   private isOutside(entity: IEntity) {
     return (
-      entity.position.x >= this.grid.getColumnCount() ||
+      entity.position.x >= this.grid.column ||
       this.snake.position.x < 0 ||
-      entity.position.y >= this.grid.getRowCount() ||
+      entity.position.y >= this.grid.row ||
       this.snake.position.y < 0
     );
   }
 
-  private render() {
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-
-    for (const drawable of [this.grid, this.snake, this.food]) {
-      drawable.draw(this.gl);
-    }
+  private isCollide(a: IEntity, b: IEntity): boolean {
+    return a.position.x === b.position.x && a.position.y === b.position.y;
   }
 }
