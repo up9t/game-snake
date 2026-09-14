@@ -47,7 +47,7 @@ onMounted(async () => {
   function getGroundMesh(width: number, height: number, depth: number): THREE.Mesh {
     const geometry = new THREE.BoxGeometry(width, height, depth);
     const material = new THREE.MeshLambertMaterial({
-      color: 0x72B369,
+      color: 0x72b369,
     });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.receiveShadow = true;
@@ -58,8 +58,8 @@ onMounted(async () => {
 
   function getPlayerMesh(maxSegments: number): THREE.InstancedMesh {
     const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshLambertMaterial({ 
-      color: 0x5E525A,
+    const material = new THREE.MeshLambertMaterial({
+      color: 0x5e525a,
     });
     const mesh = new THREE.InstancedMesh(geometry, material, maxSegments);
 
@@ -70,7 +70,7 @@ onMounted(async () => {
   }
 
   async function getFoodScene(): Promise<THREE.Object3D> {
-    const loader = new GLTFLoader()
+    const loader = new GLTFLoader();
     const gltf = await loader.loadAsync(appleModel);
     const scene = gltf.scene;
 
@@ -89,11 +89,42 @@ onMounted(async () => {
     oldPositions: IVec2[],
   ) {
     const dummy = new THREE.Object3D();
+
+    // direction
+    const changex = 0b10;
+    const changey = 0b01;
+    let changexy = 0b00;
+
     for (let i = 0; i < positions.length; i++) {
       const pos = positions[i]!;
+      const pos1 = positions[i - 1];
       const oldpos = oldPositions[i + 1];
 
+      if (typeof pos1 !== "undefined") {
+        if (pos.x !== pos1.x) {
+          changexy |= changex;
+        }
+        if (pos.y !== pos1.y) {
+          changexy |= changey;
+        }
+      }
+
       const targetPos = new THREE.Vector3(pos.x - column / 2, 0, pos.y - row / 2);
+
+      const progress = Math.max((positions.length - i) / positions.length, 0.2);
+
+      let scalex = 1;
+      let scalez = 1;
+
+      if (changexy ^ changex) {
+        scalex = progress;
+      }
+      if (changexy ^ changey) {
+        scalez = progress;
+      }
+
+      dummy.scale.set(scalex, progress, scalez);
+      changexy = 0b00;
 
       if (typeof oldpos !== "undefined" && i > 0) {
         dummy.position.set(oldpos.x - column / 2, 0, oldpos.y - row / 2);
@@ -148,7 +179,7 @@ onMounted(async () => {
 
   let oldPos: IVec2[] = [];
   let foodTime = 0;
-  let oldFoodPos: IVec2 = {x: 0, y: 0};
+  let oldFoodPos: IVec2 = { x: 0, y: 0 };
 
   let lastTime = 0;
 
@@ -183,12 +214,16 @@ onMounted(async () => {
     if (oldFoodPos.x !== food.x || oldFoodPos.y !== food.y) {
       oldFoodPos.x = food.x;
       oldFoodPos.y = food.y;
-      foodTime = 0; 
+      foodTime = 0;
     }
 
     foodTime += deltaTime;
     foodScene.position.lerp(
-      new THREE.Vector3(food.x - grid.column / 2, Math.sin(foodTime / 200) / 5, food.y - grid.row / 2),
+      new THREE.Vector3(
+        food.x - grid.column / 2,
+        Math.sin(foodTime / 200) / 5,
+        food.y - grid.row / 2,
+      ),
       0.3,
     );
     foodScene.rotation.y += deltaTime / 300;
